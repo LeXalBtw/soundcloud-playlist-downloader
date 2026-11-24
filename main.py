@@ -67,6 +67,7 @@ class SoundCloudDownloader:
     ydl_opts = {
         "format": "bestaudio/best",
         "ffmpeg_location": ffmpeg_path,
+        "ignoreerrors": True,
         "outtmpl": os.path.join(
             self.dest_dir, "%(playlist_title,artist)s", "%(title)s.%(ext)s"
         ),
