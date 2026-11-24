@@ -11,7 +11,7 @@ jobs:
     # Si son MacBook Air est un vieux modèle Intel d'avant 2020, remplace par : macos-13
     strategy: 
       matrix: 
-        os: [macos-latest, macos-13]
+        os: [macos-latest, macos-15-intel]
     runs-on: ${{ matrix.os }}
 
     steps:
