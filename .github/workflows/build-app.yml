@@ -1,9 +1,17 @@
-name: Build app (macOS + Windows)
+name: Build & Release
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag de la release où mettre les fichiers (ex : V1.0). Vide = juste compiler."
+        required: false
+        default: ""
   push:
-    tags: ["v*"]
+    tags: ["v*", "V*"]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -12,11 +20,13 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            sep: ":"
             icon: assets/icon.icns
+            sep: ":"
+            mode: ""
           - os: windows-latest
-            sep: ";"
             icon: assets/icon.ico
+            sep: ";"
+            mode: "--onefile"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -27,20 +37,33 @@ jobs:
       - run: python make_logo.py
       - name: Build
         run: >
-          pyinstaller main.py --name "SoundCloud Downloader" --windowed --noconfirm
+          pyinstaller main.py --name "SoundCloud Downloader" --windowed --noconfirm ${{ matrix.mode }}
           --icon ${{ matrix.icon }}
           --add-data "assets${{ matrix.sep }}assets"
           --collect-all customtkinter --collect-all imageio_ffmpeg --collect-all yt_dlp
-      - name: Zip (macOS)
+      - name: Zip macOS
         if: runner.os == 'macOS'
         run: ditto -c -k --keepParent "dist/SoundCloud Downloader.app" SoundCloud-Downloader-mac.zip
-      - uses: actions/upload-artifact@v4
-        if: runner.os == 'macOS'
-        with:
-          name: SoundCloud-Downloader-mac
-          path: SoundCloud-Downloader-mac.zip
-      - uses: actions/upload-artifact@v4
+      - name: Zip Windows
         if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path "dist/SoundCloud Downloader.exe" -DestinationPath SoundCloud-Downloader-windows.zip
+      - uses: actions/upload-artifact@v4
         with:
-          name: SoundCloud-Downloader-windows
-          path: dist/SoundCloud Downloader
+          name: build-${{ runner.os }}
+          path: SoundCloud-Downloader-*.zip
+
+  release:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: build-*
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: SoundCloud-Downloader-*.zip
+          generate_release_notes: false

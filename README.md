@@ -1,22 +1,26 @@
 # SoundCloud Downloader
 
-Télécharge des sons ou des playlists SoundCloud en MP3 avec une interface moderne.
+Colle un lien SoundCloud (son, playlist, profil), coche les sons que tu veux, télécharge en MP3.
 
-## Lancer
-```
-pip install -r requirements.txt
-python make_logo.py   # (re)génère le logo dans assets/
-python main.py
-```
+## ⬇️ Télécharger
+
+**[→ Dernière version (Windows + Mac)](https://github.com/LeXalBtw/soundcloud/releases/latest)**
+
+- **Windows** : `SoundCloud-Downloader-windows.zip` → dézippe → lance le `.exe`
+  (si SmartScreen bloque : *Informations complémentaires* → *Exécuter quand même*)
+- **Mac** : `SoundCloud-Downloader-mac.zip` → dézippe → clic droit sur l'app → *Ouvrir*
+  (si ça dit « endommagée » : `xattr -cr "SoundCloud Downloader.app"` dans le Terminal)
 
 ## Fonctions
-- Analyse d'un lien (son, playlist, profil) avec pochettes, titres, artistes et durées
-- Sélection des sons (cases, tout cocher / décocher, recherche)
-- Qualité MP3 : 128 / 192 / 256 / 320 kbps ou VBR
-- Aperçu audio de 30 s (▶)
-- Progression par son + globale, annulation, récapitulatif des erreurs
-- Dossier de destination mémorisé, historique, thème sombre / clair
-- Raccourcis : Entrée (analyser), Ctrl/Cmd+A (tout cocher), Ctrl/Cmd+F (recherche), Ctrl/Cmd+Entrée (télécharger), Échap (annuler)
+- Pochettes, titres, artistes, durées
+- Sélection des sons + recherche
+- MP3 128 / 192 / 256 / 320 kbps ou VBR
+- Aperçu de 30 s (▶)
+- Progression par son, annulation, historique, thème sombre / clair
+- Raccourcis : Entrée (analyser), Ctrl/Cmd+A, Ctrl/Cmd+F, Ctrl/Cmd+Entrée, Échap
 
-## Créer l'app (.app / .exe)
-Onglet Actions → « Build app » → Run workflow. Les fichiers sont dans les artefacts.
+## Lancer depuis le code
+```
+pip install -r requirements.txt
+python main.py
+```
