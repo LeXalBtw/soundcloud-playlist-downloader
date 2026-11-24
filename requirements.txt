@@ -1,5 +1,3 @@
 yt-dlp
 imageio-ffmpeg
-pyinstalleryt-dlp
-imageio-ffmpeg
 pyinstaller
