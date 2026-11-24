@@ -1,0 +1,46 @@
+name: Build app (macOS + Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            sep: ":"
+            icon: assets/icon.icns
+          - os: windows-latest
+            sep: ";"
+            icon: assets/icon.ico
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - run: python make_logo.py
+      - name: Build
+        run: >
+          pyinstaller main.py --name "SoundCloud Downloader" --windowed --noconfirm
+          --icon ${{ matrix.icon }}
+          --add-data "assets${{ matrix.sep }}assets"
+          --collect-all customtkinter --collect-all imageio_ffmpeg --collect-all yt_dlp
+      - name: Zip (macOS)
+        if: runner.os == 'macOS'
+        run: ditto -c -k --keepParent "dist/SoundCloud Downloader.app" SoundCloud-Downloader-mac.zip
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: SoundCloud-Downloader-mac
+          path: SoundCloud-Downloader-mac.zip
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: SoundCloud-Downloader-windows
+          path: dist/SoundCloud Downloader
